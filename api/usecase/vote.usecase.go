@@ -7,7 +7,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/kallel-anobom/event_voting_go/api/model"
-	subscriber "github.com/kallel-anobom/event_voting_go/api/subscribers"
+	"github.com/kallel-anobom/event_voting_go/api/subscriber"
 )
 
 func (u *VotesUsecase) Vote(ctx context.Context, vote model.Vote) error {

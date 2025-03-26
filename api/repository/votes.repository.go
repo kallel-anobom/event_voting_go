@@ -9,7 +9,6 @@ import (
 
 	"github.com/kallel-anobom/event_voting_go/api/model"
 	"github.com/kallel-anobom/event_voting_go/api/services/database"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -20,7 +19,6 @@ type VotesRepository interface {
 
 type votesRepository struct {
 	mongoService *database.MongoService
-	mongoClient  *mongo.Client
 	dbName       string
 }
 
@@ -36,14 +34,18 @@ func NewVotesRepository(ms *database.MongoService) VotesRepository {
 	}
 }
 
-func (vt *votesRepository) AddVote(vote model.Vote) error {
+func (vr *votesRepository) AddVote(vote model.Vote) error {
+	if vr.mongoService == nil {
+		return errors.New("mongo client is not initialized")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	log.Printf("Attempting to insert vote: %+v", vote) // Log do voto sendo inserido
-
-	collection := vt.mongoClient.Database(vt.dbName).Collection("votes")
+	collection := vr.mongoService.GetClient().Database(vr.dbName).Collection("votes")
 	vote.Date = time.Now()
+
+	log.Printf("Attempting to insert vote: %+v", vote)
 
 	result, err := collection.InsertOne(ctx, vote)
 	if err != nil {
@@ -76,15 +78,15 @@ func (vt *votesRepository) AddVote(vote model.Vote) error {
 	// }
 }
 
-func (r *votesRepository) GetAllVotes() ([]model.Vote, error) {
-	if r.mongoClient == nil {
+func (vr *votesRepository) GetAllVotes() ([]model.Vote, error) {
+	if vr.mongoService == nil {
 		return nil, errors.New("mongo client is not initialized")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	collection := r.mongoClient.Database(r.dbName).Collection("votes")
+	collection := vr.mongoService.GetClient().Database(vr.dbName).Collection("votes")
 
 	cursor, err := collection.Find(ctx, bson.M{})
 	if err != nil {

@@ -15,7 +15,7 @@ import (
 	"github.com/kallel-anobom/event_voting_go/api/services/cache"
 	"github.com/kallel-anobom/event_voting_go/api/services/database"
 	"github.com/kallel-anobom/event_voting_go/api/services/pubsub"
-	subscriber "github.com/kallel-anobom/event_voting_go/api/subscribers"
+	"github.com/kallel-anobom/event_voting_go/api/subscriber"
 	"github.com/kallel-anobom/event_voting_go/api/usecase"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -90,14 +90,14 @@ func main() {
 	server.POST("/api/vote", votesHandler.Vote)
 	server.GET("/api/vote/summary", votesHandler.GetSummary)
 
-	go subscriber.SubscribeToPubsub(rabbitMQService)
+	voteSubscriber := subscriber.NewVoteSubscribers(votesRepository, redisService, rabbitMQService)
+	go voteSubscriber.SubscribeToPubsub()
+
 	serverErr := make(chan error, 1)
 	go func() {
 		log.Printf("Starting server on port %s", apiPort)
 		serverErr <- server.Run(":" + apiPort)
 	}()
-
-	go server.Run(":" + apiPort)
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
