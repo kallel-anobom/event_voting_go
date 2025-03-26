@@ -1,34 +1,32 @@
 services:
-  db_postgres_voting_go:
-    image: postgres:12
-    container_name: db_postgres
-    environment:
-      POSTGRES_PASSWORD: "postgres123"
-      POSTGRES_USER: "postgres"
-      POSTGRES_DB: "db_voting"
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  pgadmin_voting_go:
-    image: dpage/pgadmin4
-    container_name: db_pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "user@test.com"
-      PGADMIN_DEFAULT_PASSWORD: "postgres123"
-    ports:
-      - "8888:80"
-
-  redis_voting:
+  redis:
     image: redis:latest
     restart: always
     ports:
       - "6379:6379"
-    volumes:
-      - redis:/root/redis
     environment:
-      - REDIS_PASSWORD=my-passwordRedis
+      - REDIS_PASSWORD=admin
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    ports:
+      - "27017:27017"
+    logging:
+      options:
+        max-size: 1g
+    volumes:
+      - mongo_data:/data/db
+
 volumes:
-  pgdata: {}
-  redis: {}
+  mongo_data: {}
