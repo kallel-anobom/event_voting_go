@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -37,24 +36,19 @@ func (u *VotesUsecase) GetVotesSummary(ctx context.Context) (dto.VoteSummary, er
 	votesByParticipant := make(map[string]int)
 	votesByHour := make(map[string]int)
 
+	loc, _ := time.LoadLocation("America/Sao_Paulo")
 	for _, vote := range rows {
-
 		votesByParticipant[strconv.Itoa(vote.ParticipantID)]++
 
-		hour := vote.Date.Format("15:00")
+		hour := vote.Date.In(loc).Format("15:00")
 		votesByHour[hour]++
+
 	}
 
 	summary := dto.VoteSummary{
 		TotalVotes:         totalVotes,
 		VotesByParticipant: votesByParticipant,
 		VotesByHour:        votesByHour,
-	}
-
-	data, _ := json.Marshal(summary)
-	err = u.cache.SetJSON(ctx, "votes-summary", string(data), int((5 * time.Minute).Seconds()))
-	if err != nil {
-		fmt.Println("Erro ao salvar resumo no Redis:", err)
 	}
 
 	err = u.cache.SetJSON(ctx, "votes-summary", summary, int((5 * time.Minute).Seconds()))

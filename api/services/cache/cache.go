@@ -12,8 +12,6 @@ type RedisService struct {
 	Client *redis.Client
 }
 
-// NewRedisService cria uma nova instância do cliente Redis.
-
 func NewRedisService(addr, password string, db int) (*RedisService, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
@@ -47,10 +45,6 @@ func (r *RedisService) SetJSON(ctx context.Context, key string, value interface{
 
 	return r.Client.Set(ctx, key, data, time.Duration(expiration)*time.Second).Err()
 }
-
-// func (r *RedisService) Set(ctx context.Context, key string, value any, d time.Duration) error {
-// 	return r.Client.Set(ctx, key, value, d).Err()
-// }
 
 func (r *RedisService) Close() error {
 	return r.Client.Close()
