@@ -55,27 +55,6 @@ func (vr *votesRepository) AddVote(vote model.Vote) error {
 
 	log.Printf("Vote inserted successfully! InsertedID: %v", result.InsertedID)
 	return nil
-	/*
-		Essa função só precisa inserir o voto no mongo
-	*/
-
-	/*
-		vote.Date = time.Now()
-		vt.mongoService.Put(vote)
-	*/
-
-	// ctx := context.Background()
-
-	// data, err := json.Marshal(votes)
-	// if err != nil {
-	// 	return errors.New("failed to marshal votes")
-	// }
-
-	// key := "votes:" + votes.ID
-	// err = vt.mongoService.Client.Set(ctx, key, data, 168*time.Hour).Err()
-	// if err != nil {
-	// 	return errors.New("failed to save votes in Redis")
-	// }
 }
 
 func (vr *votesRepository) GetAllVotes() ([]model.Vote, error) {
@@ -98,11 +77,5 @@ func (vr *votesRepository) GetAllVotes() ([]model.Vote, error) {
 	if err = cursor.All(ctx, &votes); err != nil {
 		return nil, errors.New("failed to decode votes from MongoDB")
 	}
-
-	/*
-		Essa função busca todos os votos no MONGO e retorna eles para o USECASE
-
-		o USE CASE será o responsável por calcular e processar a média
-	*/
 	return votes, nil
 }

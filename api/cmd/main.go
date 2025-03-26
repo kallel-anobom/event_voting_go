@@ -121,17 +121,4 @@ func main() {
 
 		log.Println("Server shutdown complete")
 	}
-	// if err := mongoService.Disconnect(); err != nil {
-	// 	log.Printf("Error closing MongoDB: %v", err)
-	// }
-
-	// // Set up signal handling for graceful shutdown
-	// sigs := make(chan os.Signal, 1)
-	// signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-	// <-sigs
-
-	// fmt.Println("Closing clients...")
-	// rabbitMQService.Close()
-	// // mongoService.Disconnect()
-	// redisService.Close()
 }

@@ -1,10 +1,6 @@
 package pubsub
 
 import (
-
-	// "github.com/rs/zerolog"
-	// "retroleague.org/api/internal/env"
-
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v3/pkg/amqp"
 )
