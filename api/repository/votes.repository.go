@@ -49,7 +49,7 @@ func (vr *votesRepository) AddVote(vote model.Vote) error {
 
 	result, err := collection.InsertOne(ctx, vote)
 	if err != nil {
-		log.Printf("Error inserting vote: %v", err) // Log detalhado do erro
+		log.Printf("Error inserting vote: %v", err)
 		return fmt.Errorf("failed to insert vote: %v", err)
 	}
 

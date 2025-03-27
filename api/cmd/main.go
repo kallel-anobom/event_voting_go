@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +18,7 @@ import (
 	"github.com/kallel-anobom/event_voting_go/api/services/pubsub"
 	"github.com/kallel-anobom/event_voting_go/api/subscriber"
 	"github.com/kallel-anobom/event_voting_go/api/usecase"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -90,8 +92,12 @@ func main() {
 	server.POST("/api/vote", votesHandler.Vote)
 	server.GET("/api/vote/summary", votesHandler.GetSummary)
 
+	http.Handle("/metrics", promhttp.Handler())
+
 	voteSubscriber := subscriber.NewVoteSubscribers(votesRepository, redisService, rabbitMQService)
 	go voteSubscriber.SubscribeToPubsub()
+
+	go http.ListenAndServe(":9090", nil)
 
 	serverErr := make(chan error, 1)
 	go func() {
