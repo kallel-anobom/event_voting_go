@@ -27,6 +27,24 @@ services:
         max-size: 1g
     volumes:
       - mongo_data:/data/db
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - 9090:9090
+    networks:
+      - localprom
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      - localprom
+    ports:
+      - 9100:9100
 
 volumes:
   mongo_data: {}
+
+networks:
+  localprom:
+    driver: bridge
