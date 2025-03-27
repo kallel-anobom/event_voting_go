@@ -1,4 +1,14 @@
 services:
+  api-go:
+    build: .
+    container_name: api-go
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+      - redis
+      - rabbitmq
+
   redis:
     image: redis:latest
     restart: always
@@ -33,18 +43,26 @@ services:
       - "./prometheus.yml:/etc/prometheus/prometheus.yml"
     ports:
       - 9090:9090
-    networks:
-      - localprom
+
   node-exporter:
     image: prom/node-exporter
-    networks:
-      - localprom
+
     ports:
       - 9100:9100
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
 
 volumes:
   mongo_data: {}
-
-networks:
-  localprom:
-    driver: bridge
+  grafana_data: {}
