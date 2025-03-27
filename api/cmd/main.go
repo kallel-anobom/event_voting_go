@@ -23,7 +23,7 @@ import (
 )
 
 func getRedisService() *cache.RedisService {
-	redisAddr := "localhost:6379"
+	redisAddr := "0.0.0.0:6379"
 	redisPassword := "admin"
 	redisDB := 0
 	redisService, err := cache.NewRedisService(redisAddr, redisPassword, redisDB)
@@ -35,12 +35,12 @@ func getRedisService() *cache.RedisService {
 }
 
 func getMongoService() (*database.MongoService, error) {
-	mongoURL := "mongodb://admin:admin@localhost:27017/?authSource=admin"
+	mongoURL := "mongodb://admin:admin@0.0.0.0:27017/?authSource=admin"
 	return database.NewMongoService(mongoURL)
 }
 
 func getRabbitMQService() *pubsub.RabbitMQService {
-	rabbitService, err := pubsub.NewRabbitMQService("amqp://admin:admin@localhost:5672/")
+	rabbitService, err := pubsub.NewRabbitMQService("amqp://admin:admin@0.0.0.0:5672/")
 	if err != nil {
 		fmt.Println(err)
 		panic("Erro ao conectar ao RabbitMQ")
@@ -54,7 +54,7 @@ func main() {
 	server.Use(gin.Logger())
 	server.Use(gin.Recovery())
 
-	apiPort := "8001"
+	apiPort := "8000"
 
 	mongoService, err := getMongoService()
 	if err != nil {
